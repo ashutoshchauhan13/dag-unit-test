@@ -25,7 +25,7 @@ with DAG(
     tags=["dag test demo"],
 )  as dag:
     
-    t1= BashOperator(
+    t1=BashOperator(
         task_id='echo',
         bash_command= 'echo test',
         dag=dag,
