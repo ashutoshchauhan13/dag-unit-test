@@ -27,5 +27,4 @@ with DAG(
 ) as dag:
     begin = DummyOperator(task_id="begin")
 
-    end = DummyOperator(task_id="end")  
-# End of dag
+    end = DummyOperator(task_id="end")
