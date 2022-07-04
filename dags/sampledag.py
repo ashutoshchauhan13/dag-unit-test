@@ -25,6 +25,16 @@ with DAG(
     schedule_interval=None,
     tags=["dag test demo"],
 ) as dag:
-    begin = DummyOperator(task_id="begin")
-
-    end = DummyOperator(task_id="end")
+ 
+show_date = BashOperator(
+    task_id='print_date',
+    bash_command='sleep 2',
+    dag=dag)
+ 
+data_processing_test = DataProcPySparkOperator(
+    dag=dag,
+    task_id='data_processing_test',     ##Change the name of the task_id according to task
+    main='some_folder/code/hello_GCP.py', ## This is your data processing code with location
+)
+ 
+show_date >> data_processing_test
