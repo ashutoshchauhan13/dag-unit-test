@@ -71,13 +71,3 @@ def test_three_or_less_retries(dag_bag):
     for dag_id, dag in dag_bag.dags.items():
         assert dag.default_args["retries"] <= 3
 
-
-def test_dag_id_contains_prefix(dag_bag):
-    for dag_id, dag in dag_bag.dags.items():
-        assert str.lower(dag_id).find("__") != -1
-
-
-def test_dag_id_requires_specific_prefix(dag_bag):
-    for dag_id, dag in dag_bag.dags.items():
-        assert str.lower(dag_id).startswith("data_lake__") \
-               or str.lower(dag_id).startswith("redshift_demo__")
