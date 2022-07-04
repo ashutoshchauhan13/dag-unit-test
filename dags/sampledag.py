@@ -40,6 +40,6 @@ with DAG(
     )
 chain(
     begin,
-    (task1,task2),
+    (task1,task2), 
     end,
 )
