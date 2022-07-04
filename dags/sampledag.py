@@ -24,8 +24,8 @@ with DAG(
     start_date=days_ago(1),
     schedule_interval=None,
     tags=["dag test demo"],
-) as dag:
- 
+)
+
 show_date = BashOperator(
     task_id='print_date',
     bash_command='sleep 2',
