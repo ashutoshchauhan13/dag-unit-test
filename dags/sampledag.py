@@ -24,7 +24,10 @@ with DAG(
     start_date=days_ago(1),
     schedule_interval=None,
     tags=["dag test demo"],
-)
+)  as dag:
+    begin = DummyOperator(task_id="print_date")
+
+    end = DummyOperator(task_id="data_processing_test")
 
 show_date = BashOperator(
     task_id='print_date',
