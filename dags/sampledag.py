@@ -9,7 +9,7 @@ from airflow.utils.dates import days_ago
 DAG_ID = os.path.basename(__file__).replace(".py", "")
 
 DEFAULT_ARGS = {
-    "owner": "garystafford",
+    "owner": "db-volt",
     "depends_on_past": False,
     "retries": 0,
     "email_on_failure": False,
