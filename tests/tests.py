@@ -1,47 +1,22 @@
-import unittest
-from airflow.models import DagBag
+import logging
 
-class TestHelloWorldDAG(unittest.TestCase):
-    """Check HelloWorldDAG expectation"""
+from airflow.models import BaseOperator
+from airflow.plugins_manager import AirflowPlugin
+from airflow.utils.decorators import apply_defaults
 
-    def setUp(self):
-        self.dagbag = DagBag()
+log = logging.getLogger(__name__)
 
-    def test_task_count(self):
-        """Check task count of hello_world dag"""
-        dag_id='hello_world'
-        dag = self.dagbag.get_dag(dag_id)
-        self.assertEqual(len(dag.tasks), 3)
 
-    def test_contain_tasks(self):
-        """Check task contains in hello_world dag"""
-        dag_id='hello_world'
-        dag = self.dagbag.get_dag(dag_id)
-        tasks = dag.tasks
-        task_ids = list(map(lambda task: task.task_id, tasks))
-        self.assertListEqual(task_ids, ['dummy_task', 'multiplyby5_task','hello_task'])
+class MultiplyBy5Operator(BaseOperator):
+    @apply_defaults
+    def __init__(self, my_operator_param, *args, **kwargs):
+        self.operator_param = my_operator_param
+        super(MultiplyBy5Operator, self).__init__(*args, **kwargs)
 
-    def test_dependencies_of_dummy_task(self):
-        """Check the task dependencies of dummy_task in hello_world dag"""
-        dag_id='hello_world'
-        dag = self.dagbag.get_dag(dag_id)
-        dummy_task = dag.get_task('dummy_task')
+    def execute(self, context):
+        log.info('operator_param: %s', self.operator_param)
+        return (self.operator_param * 5)
 
-        upstream_task_ids = list(map(lambda task: task.task_id, dummy_task.upstream_list))
-        self.assertListEqual(upstream_task_ids, [])
-        downstream_task_ids = list(map(lambda task: task.task_id, dummy_task.downstream_list))
-        self.assertListEqual(downstream_task_ids, ['hello_task', 'multiplyby5_task'])
 
-    def test_dependencies_of_hello_task(self):
-        """Check the task dependencies of hello_task in hello_world dag"""
-        dag_id='hello_world'
-        dag = self.dagbag.get_dag(dag_id)
-        hello_task = dag.get_task('hello_task')
-
-        upstream_task_ids = list(map(lambda task: task.task_id, hello_task.upstream_list))
-        self.assertListEqual(upstream_task_ids, ['dummy_task'])
-        downstream_task_ids = list(map(lambda task: task.task_id, hello_task.downstream_list))
-        self.assertListEqual(downstream_task_ids, [])
-
-suite = unittest.TestLoader().loadTestsFromTestCase(TestHelloWorldDAG)
-unittest.TextTestRunner(verbosity=2).run(suite)
+class MultiplyBy5Plugin(AirflowPlugin):
+    name = "multiplyby5_plugin"
