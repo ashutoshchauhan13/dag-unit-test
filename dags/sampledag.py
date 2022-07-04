@@ -32,7 +32,7 @@ with DAG(
     task1 = BashOperator(task_id="task1", bash_command="echo test")
     task2 = BashOperator(
         task_id="task2",
-        bash_command='echo unit test is working',
+        bash_command="echo unit test is working",
     )
 
 chain(
