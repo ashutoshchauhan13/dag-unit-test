@@ -1,28 +1,47 @@
 import unittest
 from airflow.models import DagBag
 
-class TestDagIntegrity(unittest.TestCase):
-
-    LOAD_SECOND_THRESHOLD = 2
+class TestHelloWorldDAG(unittest.TestCase):
+    """Check HelloWorldDAG expectation"""
 
     def setUp(self):
         self.dagbag = DagBag()
 
-    def test_import_dags(self):
-        self.assertFalse(
-            len(self.dagbag.import_errors),
-            'DAG import failures. Errors: {}'.format(
-                self.dagbag.import_errors
-            )
-        )
+    def test_task_count(self):
+        """Check task count of hello_world dag"""
+        dag_id='hello_world'
+        dag = self.dagbag.get_dag(dag_id)
+        self.assertEqual(len(dag.tasks), 3)
 
-    def test_alert_email_present(self):
+    def test_contain_tasks(self):
+        """Check task contains in hello_world dag"""
+        dag_id='hello_world'
+        dag = self.dagbag.get_dag(dag_id)
+        tasks = dag.tasks
+        task_ids = list(map(lambda task: task.task_id, tasks))
+        self.assertListEqual(task_ids, ['dummy_task', 'multiplyby5_task','hello_task'])
 
-        for dag_id, dag in self.dagbag.dags.iteritems():
-            emails = dag.default_args.get('email', [])
-            msg = 'Alert email not set for DAG {id}'.format(id=dag_id)
-            self.assertIn('alert.email@gmail.com', emails, msg)
+    def test_dependencies_of_dummy_task(self):
+        """Check the task dependencies of dummy_task in hello_world dag"""
+        dag_id='hello_world'
+        dag = self.dagbag.get_dag(dag_id)
+        dummy_task = dag.get_task('dummy_task')
 
+        upstream_task_ids = list(map(lambda task: task.task_id, dummy_task.upstream_list))
+        self.assertListEqual(upstream_task_ids, [])
+        downstream_task_ids = list(map(lambda task: task.task_id, dummy_task.downstream_list))
+        self.assertListEqual(downstream_task_ids, ['hello_task', 'multiplyby5_task'])
 
-suite = unittest.TestLoader().loadTestsFromTestCase(TestDagIntegrity)
+    def test_dependencies_of_hello_task(self):
+        """Check the task dependencies of hello_task in hello_world dag"""
+        dag_id='hello_world'
+        dag = self.dagbag.get_dag(dag_id)
+        hello_task = dag.get_task('hello_task')
+
+        upstream_task_ids = list(map(lambda task: task.task_id, hello_task.upstream_list))
+        self.assertListEqual(upstream_task_ids, ['dummy_task'])
+        downstream_task_ids = list(map(lambda task: task.task_id, hello_task.downstream_list))
+        self.assertListEqual(downstream_task_ids, [])
+
+suite = unittest.TestLoader().loadTestsFromTestCase(TestHelloWorldDAG)
 unittest.TextTestRunner(verbosity=2).run(suite)
