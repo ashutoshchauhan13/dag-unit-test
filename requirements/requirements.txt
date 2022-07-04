@@ -1,0 +1,4 @@
+# Updated for MWAA - Airflow version 2.0.2
+# python3 -m pip install --user -U -r requirements.txt
+DateTime==4.3
+apache-airflow==2.0.2
