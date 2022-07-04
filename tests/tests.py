@@ -37,9 +37,9 @@ def test_requires_tags(dag_bag):
 def test_requires_specific_tag(dag_bag):
     for dag_id, dag in dag_bag.dags.items():
         try:
-            assert dag.tags.index("data lake demo") >= 0
+            assert dag.tags.index("dag test demo") >= 0
         except ValueError:
-            assert dag.tags.index("redshift demo") >= 0
+            assert dag.tags.index("unit test demo") >= 0
 
 
 def test_desc_len_greater_than_fifteen(dag_bag):
