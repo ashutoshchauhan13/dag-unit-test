@@ -12,8 +12,8 @@ DEFAULT_ARGS = {
     "owner": "db-volt",
     "depends_on_past": False,
     "retries": 0,
-    "email_on_failure": True,
-    "email_on_retry": True,
+    "email_on_failure": False,
+    "email_on_retry": False,
 }
 
 with DAG(
