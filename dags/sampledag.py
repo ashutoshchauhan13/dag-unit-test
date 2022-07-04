@@ -29,11 +29,8 @@ with DAG(
 
     end = DummyOperator(task_id="end")
 
-    task1 = BashOperator(
-        task_id="task1",
-        bash_command='echo test'
-    )
-
+    task1 =  BashOperator(task_id="task1", bash_command="echo test")
+    
     task2 = BashOperator(
         task_id="task2",
         bash_command='echo unit test is working',
