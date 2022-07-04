@@ -8,7 +8,6 @@ from airflow.utils.dates import days_ago
 
 DAG_ID = os.path.basename(__file__).replace(".py", "")
 
-S3_BUCKET = Variable.get("data_lake_bucket")
 
 DEFAULT_ARGS = {
     "owner": "db-volt",
@@ -20,12 +19,12 @@ DEFAULT_ARGS = {
 
 with DAG(
     dag_id=DAG_ID,
-    description="Prepare Data Lake Demonstration using BashOperator and AWS CLI vs. AWS Operators",
+    description="Sample dag for unit testing",
     default_args=DEFAULT_ARGS,
     dagrun_timeout=timedelta(minutes=5),
     start_date=days_ago(1),
     schedule_interval=None,
-    tags=["data lake demo"],
+    tags=["dag test demo"],
 ) as dag:
     begin = DummyOperator(task_id="begin")
 
