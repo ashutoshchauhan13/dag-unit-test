@@ -5,7 +5,6 @@ import pytest
 from airflow.models import DagBag
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../dags"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../dags/utilities"))
 
 
 @pytest.fixture(params=["../dags/"])
