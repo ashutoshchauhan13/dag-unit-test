@@ -1,8 +1,6 @@
 import os
 from datetime import timedelta
-
 from airflow import DAG
-from airflow.models import Variable
 from airflow.models.baseoperator import chain
 from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
@@ -40,9 +38,10 @@ with DAG(
         task_id="task2",
         bash_command='echo unit test is working',
     )
-    
-    chain(
+chain(
     begin,
     (task1,task2),
     end,
 )
+    
+  
