@@ -38,8 +38,9 @@ with DAG(
         task_id="task2",
         bash_command='echo unit test is working',
     )
+
 chain(
     begin,
-    (task1,task2), 
+    (task1, task2),
     end,
 )
