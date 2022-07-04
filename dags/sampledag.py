@@ -16,6 +16,7 @@ DEFAULT_ARGS = {
 }
 
 with DAG(
+    'test1',
     dag_id=DAG_ID,
     description="Sample dag for unit testing",
     default_args=DEFAULT_ARGS,
@@ -25,7 +26,7 @@ with DAG(
     tags=["dag test demo"],
 )  as dag:
     
-t1=BashOperator(
+ t1 = BashOperator(
     task_id='echo',
     bash_command= 'echo test',
     dag=dag,
