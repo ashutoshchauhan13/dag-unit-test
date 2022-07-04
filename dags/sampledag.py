@@ -1,22 +1,62 @@
-from datetime import datetime
+import os
+from datetime import timedelta
+
 from airflow import DAG
-from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.python_operator import PythonOperator
-from airflow.operators import MultiplyBy5Operator
+from airflow.models import Variable
+from airflow.models.baseoperator import chain
+from airflow.operators.bash import BashOperator
+from airflow.operators.dummy import DummyOperator
+from airflow.utils.dates import days_ago
 
-def print_hello():
- return 'Hello Wolrd'
+DAG_ID = os.path.basename(__file__).replace(".py", "")
 
-dag = DAG('hello_world', description='Hello world example', schedule_interval='0 12 * * *', start_date=datetime(2022, 07, 05), catchup=False)
+S3_BUCKET = Variable.get("data_lake_bucket")
 
-dummy_operator = DummyOperator(task_id='dummy_task', retries = 3, dag=dag)
+DEFAULT_ARGS = {
+    "owner": "garystafford",
+    "depends_on_past": False,
+    "retries": 0,
+    "email_on_failure": False,
+    "email_on_retry": False,
+}
 
-hello_operator = PythonOperator(task_id='hello_task', python_callable=print_hello, dag=dag)
+with DAG(
+    dag_id=DAG_ID,
+    description="Prepare Data Lake Demonstration using BashOperator and AWS CLI vs. AWS Operators",
+    default_args=DEFAULT_ARGS,
+    dagrun_timeout=timedelta(minutes=5),
+    start_date=days_ago(1),
+    schedule_interval=None,
+    tags=["data lake demo"],
+) as dag:
+    begin = DummyOperator(task_id="begin")
 
-multiplyby5_operator = MultiplyBy5Operator(my_operator_param='my_operator_param',
-                                task_id='multiplyby5_task', dag=dag)
+    end = DummyOperator(task_id="end")
 
-dummy_operator >> hello_operator
+    delete_demo_s3_objects = BashOperator(
+        task_id="delete_demo_s3_objects",
+        bash_command=f'aws s3 rm "s3://{S3_BUCKET}/tickit/" --recursive',
+    )
 
-dummy_operator >> multiplyby5_operator
-# 
+    list_demo_s3_objects = BashOperator(
+        task_id="list_demo_s3_objects",
+        bash_command=f"aws s3api list-objects-v2 --bucket {S3_BUCKET} --prefix tickit/",
+    )
+
+    delete_demo_catalog = BashOperator(
+        task_id="delete_demo_catalog",
+        bash_command='aws glue delete-database --name tickit_demo || echo "Database tickit_demo not found."',
+    )
+
+    create_demo_catalog = BashOperator(
+        task_id="create_demo_catalog",
+        bash_command="""aws glue create-database --database-input \
+            '{"Name": "tickit_demo", "Description": "Datasets from AWS E-commerce TICKIT relational database"}'""",
+    )
+
+chain(
+    begin,
+    (delete_demo_s3_objects, delete_demo_catalog),
+    (list_demo_s3_objects, create_demo_catalog),
+    end,
+)
