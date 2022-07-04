@@ -30,9 +30,10 @@ jobs:
 #       run: |
 #         pip install pytest-black==0.3.12
 #         pytest dags --black -v
-    - name: Test DAGs with Pytest
-      run: |
-        pip install pytest==6.2.5
-        pushd tests || exit
-        python3 -m pytest tests.py -v || exit
-        popd || exit
+    - name: 'Test Airflow DAGs'
+  uses: micael-grilo/airflow-dags-test-action@v2.2.2
+    with:
+      requirements-file: project/requirements.txt
+      dags-path: project/dags
+      dags-test-folder: project/tests
+      var-file: project/var.json
