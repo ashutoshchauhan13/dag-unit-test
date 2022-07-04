@@ -1,8 +1,7 @@
 import os
 from datetime import timedelta
-
+from airflow.operators.bash_operator import BashOperator
 from airflow import DAG
-from airflow.operators.dummy import DummyOperator
 from airflow.utils.dates import days_ago
 
 DAG_ID = os.path.basename(__file__).replace(".py", "")
