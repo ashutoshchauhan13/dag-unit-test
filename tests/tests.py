@@ -31,7 +31,7 @@ def test_requires_specific_tag(dag_bag):
 
 def test_desc_len_greater_than_fifteen(dag_bag):
     for dag_id, dag in dag_bag.dags.items():
-        assert len(dag.description) > 10
+        assert len(dag.description) > 500
 
 
 def test_owner_len_greater_than_five(dag_bag):
