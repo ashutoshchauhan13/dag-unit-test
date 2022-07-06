@@ -17,7 +17,7 @@ DEFAULT_ARGS = {
 }
 
 with DAG(
-#     dag_id=DAG_ID,
+    dag_id=DAG_ID,
     description="This is sample dag for unit testing",
     default_args=DEFAULT_ARGS,
     dagrun_timeout=timedelta(minutes=5),
